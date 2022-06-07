@@ -61,8 +61,8 @@ class TeachableBaseIE(InfoExtractor):
         login_form = self._hidden_inputs(login_page)
 
         login_form.update({
-            'user[email]': username,
-            'user[password]': password,
+            'email': username,
+            'password': password,
         })
 
         post_url = self._search_regex(
@@ -90,7 +90,7 @@ class TeachableBaseIE(InfoExtractor):
             self._logged_in = True
             return
 
-        message = get_element_by_class('alert', response)
+        message = get_element_by_class('auth-flash-error', response)
         if message is not None:
             raise ExtractorError(
                 'Unable to login: %s' % clean_html(message), expected=True)
