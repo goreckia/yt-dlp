@@ -622,6 +622,7 @@ from .historicfilms import HistoricFilmsIE
 from .hitbox import HitboxIE, HitboxLiveIE
 from .hitrecord import HitRecordIE
 from .hotnewhiphop import HotNewHipHopIE
+from .hotmart import HotmartEmbedIE
 from .hotstar import (
     HotStarIE,
     HotStarPrefixIE,

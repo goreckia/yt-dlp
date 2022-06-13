@@ -154,7 +154,7 @@ class TeachableIE(TeachableBaseIE):
 
         # If this fails someone needs to find the new location of the data-attachment-id to give to API
         #  ... or the user doesn't have access to the lecture -- using older code to detect this
-        hotmart_container_element = get_element_html_by_class("hotmart_video_player", webpage)
+        hotmart_container_element = get_element_html_by_class('hotmart_video_player', webpage)
         if hotmart_container_element is None:
             if any(re.search(p, webpage) for p in (
                     r'class=["\']lecture-contents-locked',
@@ -168,19 +168,19 @@ class TeachableIE(TeachableBaseIE):
 
         # If this fails the API might use a different method of getting the hotmart video than the attachment-id
         hotmart_container_attributes = extract_attributes(hotmart_container_element)
-        attachment_id = hotmart_container_attributes["data-attachment-id"]
+        attachment_id = hotmart_container_attributes['data-attachment-id']
 
         # Currently holds no security and will return good data to construct video link for any valid attachment-id,
         #  else a 404
         # Not adding error checking for video_id, signature, and teachable_application_key
         #  because they seem to always be there unless there's the 404
         # Tested one includes status: "READY", and upload_retries_cap_reached: false as well
-        hotmart_video_url_data = self._download_json(f"https://{site}/api/v2/hotmart/private_video", video_id,
-                                                     query={"attachment_id": attachment_id})
+        hotmart_video_url_data = self._download_json(f'https://{site}/api/v2/hotmart/private_video', video_id,
+                                                     query={'attachment_id': attachment_id})
 
-        url = (f"https://player.hotmart.com/embed/{hotmart_video_url_data['video_id']}?"
-               f"signature={hotmart_video_url_data['signature']}&"
-               f"token={hotmart_video_url_data['teachable_application_key']}")
+        url = (f'https://player.hotmart.com/embed/{hotmart_video_url_data["video_id"]}?'
+               f'signature={hotmart_video_url_data["signature"]}&'
+               f'token={hotmart_video_url_data["teachable_application_key"]}')
 
         return url
 
@@ -200,6 +200,8 @@ class TeachableIE(TeachableBaseIE):
         hotmart_url = self._create_hotmart_url(webpage, video_id, site)
 
         title = self._og_search_title(webpage, default=None)
+
+        description = get_element_by_class('lecture-text-container', webpage)
 
         chapter = None
         chapter_number = None
@@ -223,8 +225,8 @@ class TeachableIE(TeachableBaseIE):
                     chapter = sections[chapter_number - 1]
 
         # TODO Make Hotmart Extractor and change ie to point to that, also maybe add other metadata?
-        return self.url_result(hotmart_url, ie="Generic", url_transparent=True, video_id=video_id, video_title=title,
-                               chapter=chapter, chapter_number=chapter_number)
+        return self.url_result(hotmart_url, ie="HotmartEmbed", url_transparent=True, video_id=video_id, video_title=title,
+                               chapter=chapter, chapter_number=chapter_number, webpage_url=url, description=description)
 
 
 class TeachableCourseIE(TeachableBaseIE):
